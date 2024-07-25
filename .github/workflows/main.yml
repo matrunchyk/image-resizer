@@ -1,0 +1,46 @@
+name: Build and Package DMG
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12'
+
+      - name: Install Homebrew
+        run: |
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> $GITHUB_ENV
+          source $GITHUB_ENV
+
+      - name: Install dependencies
+        run: |
+          brew install create-dmg
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build the application
+        run: |
+          source venv/bin/activate
+          ./bundle.sh
+
+      - name: Upload DMG file
+        uses: actions/upload-artifact@v2
+        with:
+          name: ImageProcessor-dmg
+          path: dist/ImageProcessor.dmg
+
