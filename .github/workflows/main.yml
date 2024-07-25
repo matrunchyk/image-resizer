@@ -22,7 +22,9 @@ jobs:
         run: |
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
           echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> $GITHUB_ENV
-          source $GITHUB_ENV
+
+      - name: Update PATH
+        run: echo "/opt/homebrew/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
         run: |
