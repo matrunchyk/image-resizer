@@ -65,6 +65,7 @@ jobs:
           local: dist/ImageProcessor.dmg
           remote: /var/www/matrunchyk.com/web/ImageProcessor/ImageProcessor.dmg
           host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
           username: ${{ secrets.SSH_USER }}
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
 
@@ -74,6 +75,7 @@ jobs:
           local: version.txt
           remote: /var/www/matrunchyk.com/web/ImageProcessor/version.txt
           host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
           username: ${{ secrets.SSH_USER }}
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
 
