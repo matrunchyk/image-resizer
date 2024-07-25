@@ -19,7 +19,7 @@ jobs:
           python-version: '3.12'
 
       - name: Set up Homebrew
-        uses: dawidd6/action-homebrew-bump-formula@v4
+        uses: Homebrew/actions/setup-homebrew@master
         id: set-up-homebrew
 
       - name: Cache Homebrew Bundler RubyGems
