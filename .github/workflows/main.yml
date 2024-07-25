@@ -1,4 +1,4 @@
-name: Build and Package DMG
+name: Build and Release DMG
 
 on:
   push:
@@ -10,49 +10,64 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.12'
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
-        id: set-up-homebrew
 
       - name: Cache Homebrew Bundler RubyGems
         id: cache
         uses: actions/cache@v3
         with:
-          path: ${{ steps.set-up-homebrew.outputs.gems-path }}
+          path: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
           key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
           restore-keys: ${{ runner.os }}-rubygems-
 
-      - name: Install Homebrew Bundler RubyGems
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: brew install-bundler-gems
-
-      - name: Install create-dmg
-        run: brew install create-dmg
-
-      - name: Set up virtual environment
+      - name: Install dependencies
         run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install --upgrade pip
+          brew install python
           pip install -r requirements.txt
-          pip install pyinstaller
+          brew install create-dmg
 
-      - name: Build the application
-        run: |
-          source venv/bin/activate
-          ./bundle.sh
+      - name: Build DMG
+        run: ./bundle.sh
 
-      - name: Upload DMG file
-        uses: actions/upload-artifact@v2
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
         with:
-          name: ImageProcessor-dmg
+          name: ImageProcessor.dmg
           path: dist/ImageProcessor.dmg
+
+  release:
+    needs: build
+    runs-on: macos-latest
+
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ImageProcessor.dmg
+          path: dist
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.sha }}
+          release_name: Release ${{ github.sha }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/ImageProcessor.dmg
+          asset_name: ImageProcessor.dmg
+          asset_content_type: application/octet-stream
 
