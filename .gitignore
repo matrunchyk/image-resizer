@@ -1,0 +1,22 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+
+# macOS
+.DS_Store
+
+# Log files
+*.log
+
+# Output folder
+source/output/
+
+# Backup files
+*.bak
+*.swp
+*~
+
