@@ -19,4 +19,7 @@ source/output/
 *.bak
 *.swp
 *~
+*.dmg
+dist
+build
 
