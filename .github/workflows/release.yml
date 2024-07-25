@@ -7,39 +7,53 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
+          python-version: '3.12'
 
-      - name: Install dependencies
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+        id: set-up-homebrew
+
+      - name: Cache Homebrew Bundler RubyGems
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.set-up-homebrew.outputs.gems-path }}
+          key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
+          restore-keys: ${{ runner.os }}-rubygems-
+
+      - name: Install Homebrew Bundler RubyGems
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: brew install-bundler-gems
+
+      - name: Install create-dmg
+        run: brew install create-dmg
+
+      - name: Set up virtual environment
         run: |
           python -m venv venv
           source venv/bin/activate
-          python -m pip install --upgrade pip
+          pip install --upgrade pip
           pip install -r requirements.txt
+          pip install pyinstaller
 
-      - name: Build project
+      - name: Build the application
         run: |
+          source venv/bin/activate
           ./bundle.sh
 
-      - name: Create DMG
-        run: |
-          mkdir -p dist/dmg
-          create-dmg dist/ImageProcessor.app dist/dmg
-
-      - name: Release
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Upload DMG file
+        uses: actions/upload-artifact@v2
         with:
-          files: |
-            dist/dmg/*.dmg
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: ImageProcessor-dmg
+          path: dist/ImageProcessor.dmg
+
 
