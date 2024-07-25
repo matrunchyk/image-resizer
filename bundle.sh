@@ -6,6 +6,7 @@ DIST_DIR="dist"
 BUILD_DIR="build"
 SPEC_FILE="gui.spec"
 BACKGROUND_IMAGE="background.png"
+ICON="icon.icns"
 
 # Ensure the virtual environment is activated
 source venv/bin/activate
@@ -57,6 +58,7 @@ echo "Creating DMG file..."
 DMG_NAME="${APP_NAME}.dmg"
 create-dmg \
   --volname "$APP_NAME" \
+  --volicon "$ICON" \
   --window-pos 200 120 \
   --window-size 800 600 \
   --icon-size 100 \
