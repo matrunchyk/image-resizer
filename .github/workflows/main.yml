@@ -1,16 +1,16 @@
-name: Release
+name: Build and Package DMG
 
 on:
   push:
-    tags:
-      - "v*.*.*"
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v2
 
       - name: Set up Python
@@ -56,4 +56,24 @@ jobs:
           name: ImageProcessor-dmg
           path: dist/ImageProcessor.dmg
 
+      - name: Create version file
+        run: echo ${{ github.sha }} > version.txt
+
+      - name: Upload DMG to remote server
+        uses: garygrossgarten/github-action-scp@release
+        with:
+          local: dist/ImageProcessor.dmg
+          remote: /var/www/matrunchyk.com/web/ImageProcessor/ImageProcessor.dmg
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Upload version file to remote server
+        uses: garygrossgarten/github-action-scp@release
+        with:
+          local: version.txt
+          remote: /var/www/matrunchyk.com/web/ImageProcessor/version.txt
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
 
