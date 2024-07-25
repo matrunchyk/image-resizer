@@ -27,8 +27,7 @@ jobs:
 
       - name: Build project
         run: |
-          source venv/bin/activate
-          pyinstaller --clean --noconfirm gui.spec
+          ./build.sh
 
       - name: Create DMG
         run: |
