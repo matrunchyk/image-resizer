@@ -27,7 +27,7 @@ jobs:
 
       - name: Build project
         run: |
-          ./build.sh
+          ./bundle.sh
 
       - name: Create DMG
         run: |
