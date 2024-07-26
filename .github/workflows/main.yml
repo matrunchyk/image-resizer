@@ -69,6 +69,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
           verbose: true
+	  rmRemote: true
 
       - name: Upload version file to remote server
         uses: garygrossgarten/github-action-scp@release
@@ -79,4 +80,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           username: ${{ secrets.SSH_USER }}
           privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+	  verbose: true
+	  rmRemote: true
+
 
