@@ -59,28 +59,16 @@ jobs:
       - name: Create version file
         run: echo ${{ github.sha }} > version.txt
 
-      - name: Upload DMG to remote server
-        uses: garygrossgarten/github-action-scp@release
+      - name: Copy ImageProcessor.dmg
+        uses: appleboy/scp-action@v0.1.7
         with:
-          local: dist/ImageProcessor.dmg
-          remote: /var/www/matrunchyk.com/web/ImageProcessor/ImageProcessor.dmg
           host: ${{ secrets.SSH_HOST }}
-          port: ${{ secrets.SSH_PORT }}
           username: ${{ secrets.SSH_USER }}
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
-          verbose: true
-	  rmRemote: true
-
-      - name: Upload version file to remote server
-        uses: garygrossgarten/github-action-scp@release
-        with:
-          local: version.txt
-          remote: /var/www/matrunchyk.com/web/ImageProcessor/version.txt
-          host: ${{ secrets.SSH_HOST }}
           port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SSH_USER }}
-          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
-	  verbose: true
-	  rmRemote: true
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "dist/ImageProcessor.dmg"
+          target: /var/www/matrunchyk.com/web/ImageProcessor/ImageProcessor.dmg
+          strip_components: 1
+          rm: true
 
-
+       
